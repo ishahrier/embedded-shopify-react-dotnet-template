@@ -42,7 +42,7 @@ public class SessionService
     {
         var shop = context.Request.Query["shop"].FirstOrDefault()?.ToString();
 
-        _logger.LogInformation($"Validating session for shop: {shop}");
+        _logger.LogInformation("Validating session for shop: {Shop}", shop);
 
         // Validate the HMAC if exists and we're hitting the root path
         if (
