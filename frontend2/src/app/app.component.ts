@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import createApp, { AppBridgeState, ClientApplication } from '@shopify/app-bridge';
 import { ResourcePicker } from "@shopify/app-bridge/actions";
+import { getSessionToken } from "@shopify/app-bridge/utilities"
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit {
   public app: ClientApplication<AppBridgeState> | undefined;
   // @ts-ignore
   public picker: ResourcePicker;
+  public token: string | undefined;
 
   ngOnInit(): void {
     let config: any = {
@@ -23,11 +25,14 @@ export class AppComponent implements OnInit {
       forceRedirect: true
     };
     this.app = createApp(config);
+     getSessionToken(this.app).then(x=>{
+       this.token = x;
+    });
 
     this.picker = ResourcePicker.create(this.app, {
       resourceType: ResourcePicker.ResourceType.Product
     });
-    this.picker.subscribe(ResourcePicker.Action.SELECT, (payload:any) => {
+    this.picker.subscribe(ResourcePicker.Action.SELECT, (payload: any) => {
       console.log(payload.selection);
     });
 
