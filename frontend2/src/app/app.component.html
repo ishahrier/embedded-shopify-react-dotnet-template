@@ -1,10 +1,2 @@
-<h1>Hollaaaa</h1>
-<button id="open-picker">Open resource picker</button>
-<script>
-  document
-    .getElementById('open-picker')
-    .addEventListener('click', async () => {
-      const selected = await shopify.resourcePicker({type: 'product'});
-      console.log(selected);
-    });
-</script>
+<h1>{{this.title}}</h1>
+<button id="open-picker" (click)="this.openPicker()">Open resource picker</button>
