@@ -3,19 +3,22 @@ import { RouterOutlet } from '@angular/router';
 import createApp, { AppBridgeState, ClientApplication } from '@shopify/app-bridge';
 import { ResourcePicker } from "@shopify/app-bridge/actions";
 import { getSessionToken } from "@shopify/app-bridge/utilities"
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
   public app: ClientApplication<AppBridgeState> | undefined;
   // @ts-ignore
   public picker: ResourcePicker;
   public token: string | undefined;
+  title = 'frontend2';
+
 
   ngOnInit(): void {
     let config: any = {
@@ -25,8 +28,8 @@ export class AppComponent implements OnInit {
       forceRedirect: true
     };
     this.app = createApp(config);
-     getSessionToken(this.app).then(x=>{
-       this.token = x;
+    getSessionToken(this.app).then(x => {
+      this.token = x;
     });
 
     this.picker = ResourcePicker.create(this.app, {
@@ -38,12 +41,27 @@ export class AppComponent implements OnInit {
 
   }
 
+  constructor(public client: HttpClient) {
+  }
+
+  public callController(): void {
+    const header = new HttpHeaders().set('Authorization', 'Bearer '+this.token+'' ); // may be localStorage/sessionStorage
+    const headers = { headers: header };
+    this.client.get("/api/products").subscribe({
+      next: (x) => {
+        alert("success");
+      },
+      error: e => {
+        alert("error");
+      }
+    })
+  }
+
   public openPicker(): void {
     this.picker.dispatch(ResourcePicker.Action.OPEN);
 
   }
 
-  title = 'frontend2';
 
 }
 
