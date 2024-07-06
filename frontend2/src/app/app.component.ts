@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
   public callController(): void {
     const header = new HttpHeaders().set('Authorization', 'Bearer '+this.token+'' ); // may be localStorage/sessionStorage
     const headers = { headers: header };
-    this.client.get("/api/products").subscribe({
+    this.client.get("/api/products",headers).subscribe({
       next: (x) => {
         alert("success");
       },
