@@ -5,6 +5,7 @@ import { ResourcePicker, Toast } from "@shopify/app-bridge/actions";
 import { getSessionToken } from "@shopify/app-bridge/utilities"
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Action } from "@shopify/app-bridge-core/actions/Toast";
+import { AppInitializerService } from "../services/app-initializer-service";
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,7 @@ import { Action } from "@shopify/app-bridge-core/actions/Toast";
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
-  public app: ClientApplication<AppBridgeState> | undefined;
+  public app: ClientApplication ;
   // @ts-ignore
   public picker: ResourcePicker;
   public token: string | undefined;
@@ -22,19 +23,18 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
+    //
+    // let config: any = {
+    //   apiKey: "5c69d4664f81a66c6d76cb39bd353cf6",
+    //   // The host of the specific shop that's embedding your app. This value is provided by Shopify as a URL query parameter that's appended to your application URL when your app is loaded inside the Shopify admin.
+    //   host: new URLSearchParams(location.search).get("host"),
+    //   forceRedirect: true
+    // };
 
-    let config: any = {
-      apiKey: "5c69d4664f81a66c6d76cb39bd353cf6",
-      // The host of the specific shop that's embedding your app. This value is provided by Shopify as a URL query parameter that's appended to your application URL when your app is loaded inside the Shopify admin.
-      host: new URLSearchParams(location.search).get("host"),
-      forceRedirect: true
-    };
-
-    this.app = createApp(config);
-    getSessionToken(this.app).then(x => {
-      this.token = x;
-    });
-
+    // this.app = createApp(config);
+    // getSessionToken(this.app).then(x => {
+    //   this.token = x;
+    // });
     this.picker = ResourcePicker.create(this.app, {
       resourceType: ResourcePicker.ResourceType.Product
     });
@@ -44,10 +44,16 @@ export class AppComponent implements OnInit {
 
   }
 
-  constructor(public client: HttpClient) {
+  constructor(public client: HttpClient, private appInitService: AppInitializerService) {
+    this.app = this.appInitService.getApp();
+
   }
 
+
   public callController(): void {
+     getSessionToken(this.app).then(x => {
+       this.token = x;
+     });
     const header = new HttpHeaders().set('Authorization', 'Bearer ' + this.token + ''); // may be localStorage/sessionStorage
     const headers = {headers: header};
     this.client.get("/api/products", headers).subscribe({
@@ -66,17 +72,18 @@ export class AppComponent implements OnInit {
   }
 
 
-
   showToad() {
     alert('');
     // @ts-ignore
-   var t =  Toast.create(this.app,{
-      action: 'ok',
+    var t = Toast.create(this.app, {
       isError: true,
       message: 'Something went wrong',
+      action: {
+        content: 'ok'
+      }
 
     });
-   t.dispatch(Action.SHOW);
+    t.dispatch(Action.SHOW);
   }
 }
 
