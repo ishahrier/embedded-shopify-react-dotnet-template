@@ -8,7 +8,6 @@ import { AppInitializerService } from "../services/app-initializer-service";
 export function initializeApp(initService:AppInitializerService) {
   return (): Promise<any> => new Promise<void>((resolve, reject) => {
     initService.initApp();
-    console.log("hola");
     resolve();
   });
 

@@ -52,18 +52,18 @@ export class AppComponent implements OnInit {
 
   public callController(): void {
      getSessionToken(this.app).then(x => {
-       this.token = x;
+       const header = new HttpHeaders().set('Authorization', 'Bearer ' + this.token + ''); // may be localStorage/sessionStorage
+       const headers = {headers: header};
+       this.client.get("/api/products", headers).subscribe({
+         next: (x) => {
+           alert("success");
+         },
+         error: e => {
+           alert("error");
+         }
+       })
      });
-    const header = new HttpHeaders().set('Authorization', 'Bearer ' + this.token + ''); // may be localStorage/sessionStorage
-    const headers = {headers: header};
-    this.client.get("/api/products", headers).subscribe({
-      next: (x) => {
-        alert("success");
-      },
-      error: e => {
-        alert("error");
-      }
-    })
+
   }
 
   public openPicker(): void {
