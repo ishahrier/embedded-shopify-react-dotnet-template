@@ -1,6 +1,9 @@
 <h1>{{this.title}}</h1>
-<button id="open-picker" (click)="this.openPicker()">Open resource picker</button>
-<button (click)="this.callController()">call product</button>
-
-<p>from pc again</p>
-<button (click)="this.showToad()">Toast </button>
+<nav>
+  <ul>
+    <li><a routerLink="/product-list" routerLinkActive="active" ariaCurrentWhenActive="page">Backend Call Demo</a></li>
+    <li><a routerLink="/resource-picker" routerLinkActive="active" ariaCurrentWhenActive="page">Shopify Admin Call Demo</a></li>
+  </ul>
+</nav>
+<!-- The routed views render in the <router-outlet>-->
+<router-outlet></router-outlet>
