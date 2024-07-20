@@ -7,7 +7,7 @@ using ShopifySharp;
 namespace backend.Controllers;
 
 [Route("api/webhooks")]
-[AllowAnonymous]
+[WebhookAuthorization]
 [ApiController]
 public class WebhookController : ControllerBase
 {

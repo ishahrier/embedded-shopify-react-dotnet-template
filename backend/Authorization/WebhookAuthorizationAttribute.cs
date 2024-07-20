@@ -43,11 +43,11 @@ public class WebhookAuthorizationFilter : Attribute, IAsyncAuthorizationFilter
             _settings.Value.Shopify.ClientSecret
         );
 
-        // // Reset the request body stream position so the next middleware can read it
-        // if (request.Body.CanSeek)
-        // {
-        //     request.Body.Position = 0;
-        // }
+        // Reset the request body stream position so the next middleware can read it
+        if (request.Body.CanSeek)
+        {
+            request.Body.Position = 0;
+        }
 
         if (!isAuthentic)
         {
