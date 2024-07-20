@@ -1,12 +1,13 @@
 using backend.Authorization;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopifySharp;
 
 namespace backend.Controllers;
 
 [Route("api/webhooks")]
-[WebhookAuthorization]
+[AllowAnonymous]
 [ApiController]
 public class WebhookController : ControllerBase
 {
@@ -27,10 +28,10 @@ public class WebhookController : ControllerBase
     /// <param name="shop"></param>
     [HttpPost("uninstalled")]
     public async Task<IActionResult> Uninstalled(
-        [FromHeader(Name = "X-Shopify-Shop-Domain")] string shopDomain,
-        [FromBody] Shop shop
+        [FromHeader(Name = "X-Shopify-Shop-Domain")] string shopDomain
     )
     {
+        
         _logger.LogInformation("Uninstalled webhook received for {shop}", shopDomain);
 
         var sessionId = SessionService.GetSessionId(shopDomain);
