@@ -10,7 +10,9 @@ namespace backend.Authorization;
 
 public class WebhookAuthorizationAttribute : TypeFilterAttribute
 {
-    public WebhookAuthorizationAttribute() : base(typeof(WebhookAuthorizationFilter)) { }
+    public WebhookAuthorizationAttribute() : base(typeof(WebhookAuthorizationFilter))
+    {
+    }
 }
 
 public class WebhookAuthorizationFilter : Attribute, IAsyncAuthorizationFilter
@@ -33,9 +35,8 @@ public class WebhookAuthorizationFilter : Attribute, IAsyncAuthorizationFilter
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
         var request = context.HttpContext.Request;
-        //
-        // // Enable buffering, which lets the request stream be read multiple times
-         request.EnableBuffering();
+        //Enable buffering, which lets the request stream be read multiple times
+        request.EnableBuffering();
 
         var isAuthentic = await AuthorizationService.IsAuthenticWebhook(
             request.Headers,
@@ -44,10 +45,7 @@ public class WebhookAuthorizationFilter : Attribute, IAsyncAuthorizationFilter
         );
 
         // Reset the request body stream position so the next middleware can read it
-        if (request.Body.CanSeek)
-        {
-            request.Body.Position = 0;
-        }
+        if (request.Body.CanSeek) request.Body.Position = 0;
 
         if (!isAuthentic)
         {
