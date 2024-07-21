@@ -52,7 +52,7 @@ public class AuthController : ControllerBase
     [HttpGet(Name = nameof(Auth))]
     public IActionResult Auth(
         [FromQuery] string shop,
-        [FromQuery] string host,
+        [FromQuery] string? host,
         [FromQuery] string? embedded
     )
     {
@@ -76,7 +76,10 @@ public class AuthController : ControllerBase
             var u = new UriBuilder(
                 $"{Request.Scheme}://{Request.Host}{_settings.Value.Shopify.Auth.ExitIframe}"
             );
-
+            if (string.IsNullOrEmpty(host))
+            {
+                host = "https://admin.shopify.com/store/exico-test-store/".BinaryToBase64();
+            }
             var redirectUriParams = new StringBuilder();
             redirectUriParams.Append($"shop={shop}&host={host}");
 

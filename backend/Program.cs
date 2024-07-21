@@ -82,7 +82,11 @@ app.MapFallback(HandleIndex);
 async Task HandleIndex(HttpContext context, SessionService sessionService)
 {
     await sessionService.ValidateShopInstalled(context);
-
+    if (DateTime.Now.Minute > 48)
+    {
+        context.Response.Redirect("/Subscription?shop="+context.Request.Query["shop"]);
+        return;
+    }
     // Serve the index.html file
     context.Response.ContentType = "text/html";
     await context.Response.SendFileAsync("wwwroot/index.html");
