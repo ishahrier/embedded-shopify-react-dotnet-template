@@ -29,6 +29,7 @@ public class ShopifyAuthorizationHandler : IAuthorizationMiddlewareResultHandler
         PolicyAuthorizationResult authorizeResult
     )
     {
+
         if (!authorizeResult.Succeeded)
         {
             await defaultHandler.HandleAsync(next, context, policy, authorizeResult);
@@ -41,7 +42,8 @@ public class ShopifyAuthorizationHandler : IAuthorizationMiddlewareResultHandler
 
         // dest = shop
         var dest = claims.FirstOrDefault((c) => c.Type == "dest")?.Value;
-
+        // context.Response.Redirect("/api/subscription ");
+        // return;
         if (string.IsNullOrEmpty(dest))
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
