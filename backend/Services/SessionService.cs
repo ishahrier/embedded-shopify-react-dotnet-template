@@ -30,7 +30,7 @@ public class SessionService
     /// </summary>
     /// <param name="shop"></param>
     /// <returns></returns>
-    public static string GetSessionId(string shop)
+    public static string GetFormattedSessionIdName(string shop)
     {
         return $"offline_{shop}";
     }
@@ -44,6 +44,24 @@ public class SessionService
 
         _logger.LogInformation("Validating session for shop: {Shop}", shop);
 
+        // if shop is null then theres nothing we can do
+        if (shop == null)
+        {
+            throw new Exception(
+                $"Missing shop query string parameter, URL: {context.Request.GetDisplayUrl()}"
+            );
+        }
+        
+        var shopUrl = $"https://{shop}";
+        var validShop = await AuthorizationService.IsValidShopDomainAsync(shopUrl);
+
+        if (!validShop)
+        {
+            throw new Exception(
+                $"Invalid shop domain: {shop}, URL: {context.Request.GetDisplayUrl()}"
+            );
+        }
+        
         // Validate the HMAC if exists and we're hitting the root path
         if (
             context.Request.Path.Value == "/"
@@ -57,54 +75,22 @@ public class SessionService
             throw new Exception($"Invalid HMAC for URL: {context.Request.GetDisplayUrl()}");
         }
 
-        if (shop == null)
-        {
-            throw new Exception(
-                $"Missing shop query string parameter, URL: {context.Request.GetDisplayUrl()}"
-            );
-        }
-
-        var shopUrl = $"https://{shop}";
-        var validShop = await AuthorizationService.IsValidShopDomainAsync(shopUrl);
-
-        if (!validShop)
-        {
-            throw new Exception(
-                $"Invalid shop domain: {shop}, URL: {context.Request.GetDisplayUrl()}"
-            );
-        }
-
-        // Check if the store has installed the app before
-        var sessionId = GetSessionId(shop);
         // Get the session from the database
-        var session = await GetSession(sessionId);
+        var session = await GetSession(GetFormattedSessionIdName(shop));
 
         // Don't redirect via server if the user is trying to exit the iframe
-        if (
-            session == null
-            && !Regex.IsMatch(context.Request.Path.Value!, _settings.Value.Shopify.Auth.ExitIframe)
-        )
-        {
-            _logger.LogInformation(
-                $"App installation was not found for shop, redirecting to {_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}"
-            );
-
-            // Redirect to the auth page
-            context.Response.Redirect(
-                $"{_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}"
-            );
-            return;
-        }
+        // if (session == null && !Regex.IsMatch(context.Request.Path.Value!, _settings.Value.Shopify.Auth.ExitIframe))
+        // {
+        //     _logger.LogInformation($"App installation was not found for shop, redirecting to {_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}");
+        //     // Redirect to the auth page
+        //     context.Response.Redirect($"{_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}");
+        //     return;
+        // }
 
         if (session == null)
         {
-            _logger.LogInformation(
-                $"Session not found for shop: {shop}, redirecting to {_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}"
-            );
-
-            context.Response.Redirect(
-                $"{_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}"
-            );
+            _logger.LogInformation($"Session not found for shop: {shop}, redirecting to {_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}");
+            context.Response.Redirect($"{_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}");
             return;
         }
 
@@ -122,9 +108,7 @@ public class SessionService
             if (e.Message.Contains("Invalid API key or access token"))
             {
                 _logger.LogInformation($"Invalid/Outdated access token for shop: {shop}");
-                context.Response.Redirect(
-                    $"{_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}"
-                );
+                context.Response.Redirect($"{_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}");
                 return;
             }
         }

@@ -156,7 +156,7 @@ public class AuthController : ControllerBase
                 _sessionService.SaveSession(
                     new Session
                     {
-                        Id = SessionService.GetSessionId(shop!),
+                        Id = SessionService.GetFormattedSessionIdName(shop!),
                         Shop = shop!,
                         Token = accessToken,
                         Scope = string.Join(", ", scopes.Select(s => s.Handle))
@@ -164,7 +164,7 @@ public class AuthController : ControllerBase
                 );
 
                 var storedSession = await _sessionService.GetSession(
-                    SessionService.GetSessionId(shop!)
+                    SessionService.GetFormattedSessionIdName(shop!)
                 );
 
                 _logger.LogInformation($"Stored Session for shop: {storedSession?.Shop}");

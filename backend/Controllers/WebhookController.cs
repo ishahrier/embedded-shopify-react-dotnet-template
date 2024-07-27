@@ -34,7 +34,7 @@ public class WebhookController : ControllerBase
         
         _logger.LogInformation("Uninstalled webhook received for {shop}", shopDomain);
 
-        var sessionId = SessionService.GetSessionId(shopDomain);
+        var sessionId = SessionService.GetFormattedSessionIdName(shopDomain);
         await _sessionService.DeleteSession(sessionId);
 
         _logger.LogInformation("Session deleted for {shop}", shopDomain);

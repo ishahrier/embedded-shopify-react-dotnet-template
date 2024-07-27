@@ -52,7 +52,7 @@ public class ShopifyAuthorizationHandler : IAuthorizationMiddlewareResultHandler
         }
 
         var shop = Regex.Replace(dest, "https?://", "");
-        var sessionId = SessionService.GetSessionId(shop);
+        var sessionId = SessionService.GetFormattedSessionIdName(shop);
 
         var session = await _sessionService.GetSession(sessionId);
 
