@@ -24,20 +24,8 @@ public class SessionService
         _settings = settings;
         _context = context;
     }
-
-    /// <summary>
-    /// Get the session id for a shop. This is used as the primary key for the session.
-    /// </summary>
-    /// <param name="shop"></param>
-    /// <returns></returns>
-    public static string GetFormattedSessionIdName(string shop)
-    {
-        return $"offline_{shop}";
-    }
-
-    /// <summary>
-    /// Validate the shop domain and access token.
-    /// </summary>
+    public static string GetFormattedSessionIdName(string shop) => $"offline_{shop}";
+    
     public async Task ValidateShopInstalled(HttpContext context)
     {
         var shop = context.Request.Query["shop"].FirstOrDefault()?.ToString();
@@ -78,15 +66,6 @@ public class SessionService
         // Get the session from the database
         var session = await GetSession(GetFormattedSessionIdName(shop));
 
-        // Don't redirect via server if the user is trying to exit the iframe
-        // if (session == null && !Regex.IsMatch(context.Request.Path.Value!, _settings.Value.Shopify.Auth.ExitIframe))
-        // {
-        //     _logger.LogInformation($"App installation was not found for shop, redirecting to {_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}");
-        //     // Redirect to the auth page
-        //     context.Response.Redirect($"{_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}");
-        //     return;
-        // }
-
         if (session == null)
         {
             _logger.LogInformation($"Session not found for shop: {shop}, redirecting to {_settings.Value.Shopify.Auth.Path}{context.Request.QueryString}");
@@ -94,13 +73,10 @@ public class SessionService
             return;
         }
 
-        // Check if the access token is still valid by making a request to the shop
-        var service = new AccessScopeService(shopUrl, session.Token);
-
+        // Make a demo call and see if access token is still working
         try
         {
-            // Check if the access token is still valid by making a request to the shop
-            // It is also good practice to make sure that the scope matches what we need, if not, re-authenticate
+            var service = new AccessScopeService(shopUrl, session.Token);
             await service.ListAsync();
         }
         catch (ShopifyException e)
@@ -136,10 +112,7 @@ public class SessionService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<Session?> GetSession(string id)
-    {
-        return await _context.Sessions.FindAsync(id);
-    }
+    public async Task<Session?> GetSession(string id) => await _context.Sessions.FindAsync(id);
 
     public async Task<bool> DeleteSession(string id)
     {
