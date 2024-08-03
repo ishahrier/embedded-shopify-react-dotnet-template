@@ -18,6 +18,8 @@ namespace backend.Authorization;
         {
             if (environment.IsDevelopment())
                 return;
+            // context.Result = new StatusCodeResult(StatusCodes.Status402PaymentRequired);
+            
             throw new AuthenticationException("Unauthorized");
         }
     }
