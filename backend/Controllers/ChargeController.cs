@@ -56,7 +56,7 @@ public  class ChargeController : ControllerBase
         if (charge.Status == "active")
         {
             var redirectUrl =  $"https://admin.shopify.com/store/{session.Shop}/apps/dot-net-test-app";
-            return new RedirectResult(redirectUrl);
+            return new RedirectResult("https://admin.shopify.com/store/exico-test-store/apps/5c69d4664f81a66c6d76cb39bd353cf6");
         }
         return Ok();
     }
