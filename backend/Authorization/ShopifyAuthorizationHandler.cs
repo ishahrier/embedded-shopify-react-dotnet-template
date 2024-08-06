@@ -73,6 +73,7 @@ public class ShopifyAuthorizationHandler : IAuthorizationMiddlewareResultHandler
         // Inject session into context
         context.Items[GlobalVariables.TokenContextKey] = session;
         context.Items[GlobalVariables.ShopUrlContextKey] = $"{context.Request.Scheme}://{shop}";
+        context.Items[GlobalVariables.Shop] = shop;
 
         // Fall back to the default implementation.
         await defaultHandler.HandleAsync(next, context, policy, authorizeResult);

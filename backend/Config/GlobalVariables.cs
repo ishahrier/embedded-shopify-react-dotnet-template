@@ -6,4 +6,5 @@ public static class GlobalVariables
 
     public static string ShopUrlContextKey = "ShopUrl";
     public static string TokenContextKey = "Token";
+    public static string Shop = "Shop";
 }
