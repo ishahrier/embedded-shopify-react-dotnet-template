@@ -5,22 +5,20 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace backend.Authorization;
 
- 
-    public class PlanRequiredAuthorizationAttribute() : TypeFilterAttribute(typeof(PlanRequiredAuthorizationAttributeFilter));
+public class PlanRequiredAuthorizationAttribute() : TypeFilterAttribute(typeof(PlanRequiredAuthorizationAttributeFilter));
 
+[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
+public class PlanRequiredAuthorizationAttributeFilter(SessionService rep, IWebHostEnvironment environment) : Attribute, IAuthorizationFilter
+{
+    private readonly SessionService _rep = rep;
 
-    [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
-    public class PlanRequiredAuthorizationAttributeFilter(SessionService rep, IWebHostEnvironment environment) : Attribute, IAuthorizationFilter
+    public void OnAuthorization(AuthorizationFilterContext context)
     {
-        private readonly SessionService _rep = rep;
+        // if (environment.IsDevelopment())
+        //     return;
+        // context.Result = new StatusCodeResult(StatusCodes.Status402PaymentRequired);
 
-        public void OnAuthorization(AuthorizationFilterContext context)
-        {
-            if (environment.IsDevelopment())
-                return;
-            // context.Result = new StatusCodeResult(StatusCodes.Status402PaymentRequired);
-            
-            throw new AuthenticationException("Unauthorized");
-        }
+        //throw new AuthenticationException("Unauthorized");
+        //context.Result = new StatusCodeResult(StatusCodes.Status401Unauthorized);
     }
- 
+}

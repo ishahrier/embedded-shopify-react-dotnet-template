@@ -1,3 +1,4 @@
+using backend.Authorization;
 using backend.Config;
 using backend.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,6 +20,7 @@ public class ProductController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
+    [PlanRequiredAuthorization]
     public async Task<IActionResult> Index()
     {
         var accessToken = (Session?)HttpContext.Items[GlobalVariables.TokenContextKey];
