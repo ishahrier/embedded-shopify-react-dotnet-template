@@ -15,10 +15,7 @@ export class ProductListComponent {
   constructor(private appInitService: AppInitializerService,public client: HttpClient) {
   }
   public callBackEndController(): void {
-    getSessionToken(this.appInitService.getApp()).then(token => {
-      const header = new HttpHeaders().set('Authorization', 'Bearer ' + token + '');
-      const headers = {headers: header};
-      this.client.get("/api/products", headers).subscribe({
+      this.client.get("/api/products").subscribe({
         next: (x) => {
           alert("success");
         },
@@ -26,7 +23,5 @@ export class ProductListComponent {
           alert("error");
         }
       })
-    });
-
   }
 }
