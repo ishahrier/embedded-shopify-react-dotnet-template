@@ -3,11 +3,15 @@ import { Redirect } from "@shopify/app-bridge/actions";
 import { CommonHelper } from "../../helpers/common-helper";
 import { BillingPlanService } from "../../../services/billing-plan-service";
 import { BillingPlan } from "../../../models/billing-plan.model";
+import { CurrencyPipe, NgClass } from "@angular/common";
 
 @Component({
   selector: 'app-needs-subscription',
   standalone: true,
-  imports: [],
+  imports: [
+    CurrencyPipe,
+    NgClass
+  ],
   providers: [CommonHelper, BillingPlanService],
   templateUrl: './needs-subscription.component.html',
   styleUrl: './needs-subscription.component.css'
@@ -42,4 +46,9 @@ export class NeedsSubscriptionComponent implements OnInit {
       }
     })
   }
+
+  public GetBulletPoints(bulletPoints: string): string[] {
+    return bulletPoints.split(";");
+  }
+
 }
