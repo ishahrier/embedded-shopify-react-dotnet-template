@@ -2,8 +2,6 @@
 import { Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { BillingPlan } from "../models/billing-plan.model";
-import { Redirect } from "@shopify/app-bridge/actions";
-import { Action } from "@shopify/app-bridge-core/actions/Navigation/Redirect";
 import { ShopifyRecurringCharge } from "../models/shopify-recurring-charge.model.ts";
 
 @Injectable({
