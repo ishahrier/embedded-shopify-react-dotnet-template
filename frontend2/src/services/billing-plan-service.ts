@@ -19,6 +19,6 @@ export class BillingPlanService {
   }
 
   public createRecurringChargeForPlan(billingPlanId: number): Observable<ShopifyRecurringCharge> {
-    return this.client.post<ShopifyRecurringCharge>("/api/charge/createCharge?billingPlanId=" + billingPlanId, {})
+    return this.client.post<ShopifyRecurringCharge>("/api/charge/createCharge?billingPlanId=" + billingPlanId, null)
   }
 }
