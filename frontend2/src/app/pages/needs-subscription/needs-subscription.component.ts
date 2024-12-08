@@ -1,38 +1,45 @@
-import { Component } from '@angular/core';
-import { getSessionToken } from "@shopify/app-bridge/utilities";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { AppInitializerService } from "../../../services/app-initializer-service";
-import { JsonPipe } from "@angular/common";
+import { Component, OnInit } from '@angular/core';
 import { Redirect } from "@shopify/app-bridge/actions";
-import { Action } from "@shopify/app-bridge-core/actions/Navigation/Redirect";
+import { CommonHelper } from "../../helpers/common-helper";
+import { BillingPlanService } from "../../../services/billing-plan-service";
+import { BillingPlan } from "../../../models/billing-plan.model";
 
 @Component({
   selector: 'app-needs-subscription',
   standalone: true,
-  imports: [JsonPipe],
+  imports: [],
+  providers: [CommonHelper, BillingPlanService],
   templateUrl: './needs-subscription.component.html',
   styleUrl: './needs-subscription.component.css'
 })
-export class NeedsSubscriptionComponent {
+export class NeedsSubscriptionComponent implements OnInit {
+  protected billingPlans: BillingPlan[] = [];
 
-  constructor(private appInitService:AppInitializerService,private client: HttpClient) {
+  constructor(
+    private billingPlanService: BillingPlanService,
+    private commonHelper: CommonHelper) {
   }
-  public charge: any;
-  public createRecCharge(): void {
-    getSessionToken(this.appInitService.getApp()).then(token => {
-      const header = new HttpHeaders().set('Authorization', 'Bearer ' + token + '');
-      const headers = {headers: header};
-      this.client.get("/api/charge/getCharge", headers).subscribe({
-        next: (x) => {
-          this.charge = x;
-          const redirect = Redirect.create(this.appInitService.getApp());
-          redirect.dispatch(Action.REMOTE, this.charge.confirmationUrl);
-        },
-        error: e => {
-          alert('Error getting recurring charge');
-        }
-      })
-    });
 
+  ngOnInit(): void {
+    this.billingPlanService.getAllBillingPlans().subscribe({
+      next: x => {
+        this.billingPlans = x;
+      },
+      error: e => {
+        alert('Error getting the list of billing plans');
+      }
+    })
+  }
+
+
+  public createRecCharge(planId: number): void {
+    this.billingPlanService.createRecurringChargeForPlan(planId).subscribe({
+      next: (x: any) => {
+        this.commonHelper.redirect(Redirect.Action.REMOTE, x.confirmationUrl);
+      },
+      error: e => {
+        alert('Error creating recurring charge for selected billing plan');
+      }
+    })
   }
 }
